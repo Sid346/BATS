@@ -5,7 +5,7 @@
 
 typedef struct{
 	char eventId;
-	char Event[20];
+	char Event[100];
 }Event_TypeDef;
 
 typedef enum{
@@ -18,7 +18,7 @@ void delay(){
 	while(--counter!=0);
 }
 
-status parseString(char* Input, Event_TypeDef* events){
+status parseString(const char* Input, Event_TypeDef* events){
 	int count = 0;
 	int counter;
 	while(*Input != '\0')

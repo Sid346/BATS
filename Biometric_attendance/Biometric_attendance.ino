@@ -1,7 +1,7 @@
 #include <Adafruit_GFX.h>    // Core graphics library
 #include <Adafruit_ST7735.h> // Hardware-specific library
 #include <SPI.h>
-#include <parse.h>
+#include "parse.h"
 #include <ESP8266WiFi.h>
 #include <Hash.h>
 #include "ArduinoJson.h"
@@ -27,9 +27,9 @@ char event5[20] = "Mechanics_Test";
 bool attendance[120]={0};
 
 uint8_t checkID(int *attendance);
-const char* ssid  = "NITS";//";   //replace with your own SSID
-const char* password = "abcde";    //replace with your own
-const char* host = "lastiot.000webhostapp.com";  
+const char* ssid  = "utkarsh";//";   //replace with your own SSID
+const char* password = "utkarsh123";    //replace with your own
+const char* host = "bats.rf.gd";  
 uint8_t checkID(bool *attendance);
 uint8_t setID(bool *attendance);
 #define TFT_CS     D7
@@ -67,48 +67,79 @@ finger.begin(57600);
 tft.initR(INITR_BLACKTAB); 
 tft.fillScreen(ST7735_BLACK);
 pinMode(D5,INPUT_PULLUP);
-tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-tft.setCursor(0, 80);
-tft.print("   Press the Button ");
+tft.setCursor(25, 35);
+tft.setTextSize(2);
+tft.setRotation(3);
+tft.print("Welcome to ");
+tft.setCursor(60,65);
+tft.print("BATS");
+delay(2000);
+tft.setTextSize(2);
+tft.fillScreen(ST7735_BLACK);
+testdrawcircles(10,ST7735_YELLOW);
+tft.fillScreen(ST7735_BLACK);
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(55,35);
+tft.print("Press");
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(65,55);
+tft.print("the");
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(52,75);
+tft.print("Button");
 
 
 }
-
+void testdrawcircles(uint8_t radius, uint16_t color) {
+  for (int16_t x=0; x < tft.width()+radius; x+=radius*2) {
+    for (int16_t y=0; y < tft.height()+radius; y+=radius*2) {
+      tft.drawCircle(x, y, radius, color);
+      delay(30);
+    }
+  }
+}
 void loop() {
   // put your main code here, to run repeatedly:
 if(digitalRead(D5)==LOW)
 {
   tft.fillScreen(ST7735_BLACK);
-  tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-  tft.setCursor(0, 80);
-  tft.print("  Waiting For Server!");
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(20,35);
+tft.print("Connecting");
+//col*rows
+tft.setCursor(65,55);
+tft.print("to");
+//col*rows
+tft.setCursor(53,75);
+tft.print("BATS");
   while( !ServerConnect());
+  tft.setTextSize(1);
    tft.fillScreen(ST7735_BLACK);
-  tft.drawRect(0,0 ,128,32, ST7735_GREEN);
-    tft.setCursor(25, 15);
-  tft.print(event1);
-  tft.fillCircle(10,15,5,ST7735_GREEN);
-    tft.drawRect(0,32 ,128,64, ST7735_GREEN);
-   tft.setCursor(25, 45);
+  tft.drawRect(0,0 ,159,25, ST7735_GREEN);
+    tft.setCursor(20,0);
+  tft.print(jsonparse[0].Event);
+  tft.fillCircle(10,10,5,ST7735_GREEN);
+ tft.drawRect(0,25 ,159,25, ST7735_GREEN);
+   tft.setCursor(20,37);
   tft.print(event2);
-     tft.drawRect(0,64 ,128,96, ST7735_GREEN);
-   tft.setCursor(25, 75);
+ tft.drawRect(0,50 ,159,25, ST7735_GREEN);
+   tft.setCursor(20,62);
   tft.print(event3);
-     tft.drawRect(0,96 ,128, 128, ST7735_GREEN);
-   tft.setCursor(25, 105);
+  tft.drawRect(0,75,159,25, ST7735_GREEN);
+   tft.setCursor(20,87);
   tft.print(event4);
-     tft.drawRect(0,128 ,128,160, ST7735_GREEN);
-   tft.setCursor(25, 135);
+tft.drawRect(0,100,159,25, ST7735_GREEN);
+   tft.setCursor(20,113);
   tft.print(event5);
   int a=0,i=0;
   while(digitalRead(D5)==HIGH){yield();}
  while(a!=1){
   if(a==2)
   {
-   tft.fillCircle(10,15+30*i,5,ST7735_BLACK);
+   tft.fillCircle(10,10+25*i,5,ST7735_BLACK);
    i++;
    if(i>4)i=0;
-   tft.fillCircle(10,15+30*i,5,ST7735_GREEN); 
+   tft.fillCircle(10,10+25*i,5,ST7735_GREEN); 
    Serial.println("Yo");
   }
   a=Select();
@@ -125,12 +156,36 @@ if(digitalRead(D5)==LOW)
  */
  delay(2000);
  tft.fillScreen(ST7735_BLACK);
- tft.setCursor(1, 75);
- tft.print("Press Button to Start");
+  tft.setTextSize(2);
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(10,35);
+tft.print("Press Button");
+//col*rows
+tft.setCursor(65,55);
+tft.print("to");
+//col*rows
+tft.setCursor(53,75);
+tft.print("Start");
+  tft.setTextSize(1);
  i=0;
- while(i< 121){
  while(digitalRead(D5)==HIGH){yield();}
-  checkID(attendance);}
+ checkID(attendance);
+ while(i< 121){
+ tft.fillScreen(ST7735_BLACK);
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(10,35);
+  tft.setTextSize(2);
+tft.print("Press Button");
+//col*rows
+tft.setCursor(65,55);
+tft.print("to");
+//col*rows
+tft.setCursor(48,75);
+tft.print("Proceed");
+  tft.setTextSize(1);
+ while(digitalRead(D5)==HIGH){yield();}
+  checkID(attendance);
+  }
   
 
 }
@@ -168,13 +223,13 @@ bool ServerConnect(void)
   
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 8080;
-  if (!client.connect("172.16.30.20", httpPort)) {
+  const int httpPort = 80;
+  if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
     return 4;
   }
 
-identify = "1614";
+identify = "1615";
 hash = sha1(identify+"BioMetriC"); 
 
 JsonObject& root = jsonBuffer.createObject();
@@ -186,7 +241,7 @@ root.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
 //parseString(JSONmessageBuffer,jsonparse);
 Serial.println(JSONmessageBuffer);
 
-String url="https://lastiot.000webhostapp.com/api.php";//https://lastiot.000webhostapp.com/api.php
+String url="/Bhatt/service1.php";//https://lastiot.000webhostapp.com/api.php
 
 client.print("POST " + url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" + 
@@ -217,13 +272,16 @@ client.print("\n");
 String line;
     delay(100);
     for(i=0;i<12;i++){
-     line = client.readStringUntil('\n');
+     line = client.readStringUntil('\0');
     Serial.println(line);}
     //Serial.print("Data Sent!");
     //
     line = client.readStringUntil('\n');
+    char *line2 = (char*)line.c_str();
     Serial.println("The json response is");
-    Serial.println(line);
+    parseString(line2,jsonparse);
+    Serial.println(jsonparse[0].Event);
+    Serial.println(jsonparse[0].eventId);
     //parse the char array here
   
   return 1;
@@ -238,14 +296,27 @@ uint8_t checkID(bool *attendance){
   uint8_t val = finger.getImage();
    unsigned long timeout = millis();
   tft.fillScreen(ST7735_BLACK);
-  tft.setCursor(10, 75);
-  tft.print("Put your Finger!");
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(35,35);
+  tft.setTextSize(2);
+tft.print("Put your");
+//col*rows
+tft.setCursor(48,55);
+tft.print("Finger");
+  tft.setTextSize(1);
   while(val != FINGERPRINT_OK){
   val = finger.getImage();
   if(millis() - timeout > 10000){
   tft.fillScreen(ST7735_BLACK);
-  tft.setCursor(10, 75);
-  tft.print("No Finger Presented");
+tft.drawRect(0,0,159,127, ST7735_GREEN);//col*rows
+tft.setCursor(20,35);
+  tft.setTextSize(2);
+tft.print("No Finger");
+//col*rows
+tft.setCursor(20,55);
+tft.print("Presented!");
+  tft.setTextSize(1);
+   delay(1500);
   return 0;
     }
     yield();
@@ -254,9 +325,9 @@ uint8_t checkID(bool *attendance){
   if(val != FINGERPRINT_OK)
   {
     tft.fillScreen(ST7735_BLACK);
-    tft.setCursor(20, 75);
+    tft.setCursor(30, 55);
     tft.print("Finger too messy");
-    
+     delay(1500);
     checkID(attendance);
   }
     
@@ -264,19 +335,21 @@ uint8_t checkID(bool *attendance){
   if(val == FINGERPRINT_OK)
   {
     tft.fillScreen(ST7735_BLACK);
-    tft.setCursor(20, 75);
+    tft.setCursor(30,50);
     tft.print("Attendance Stored");
-    tft.setCursor(0, 130);
-    tft.print("  Scan Admin's Finger");
-    tft.setCursor(40, 150);
-    tft.print("to STOP!");
+    tft.setCursor(10, 100);
+    tft.print("Scan Admin's Finger to STOP!");
+    delay(1500);
     setID(attendance);
     i++;
     return 1;
   }else {
     tft.fillScreen(ST7735_BLACK);
-    tft.setCursor(20, 75);
-    tft.print("Fingerprint not found!");
+    tft.setCursor(10, 50);
+    tft.print("No Fingerprint Found!");
+    tft.setCursor(10, 80);
+    tft.print("Attendance Not Marked!");
+    delay(1500);
     return 0;
   }
 }
