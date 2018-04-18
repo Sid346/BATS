@@ -44,95 +44,93 @@ bool ServerConnect(void);
   IPAddress ip;
   int i;
   String identify;
+  
 void setup() 
 {
-Serial.begin(115200);
-Serial.println();
-Serial.print("Connecting to ");
-Serial.println(ssid);
-WiFi.mode(WIFI_STA);
-WiFi.begin(ssid, password);
-while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-  ip = WiFi.localIP();
-Serial.println("");
-Serial.println("WiFi connected");  
-Serial.println("IP address: ");
-Serial.println(ip);
-finger.begin(57600);
-tft.initR(INITR_BLACKTAB); 
-tft.fillScreen(ST7735_BLACK);
-pinMode(D5,INPUT_PULLUP);
-tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-tft.setCursor(0, 80);
-tft.print("   Press the Button ");
-
-
+    Serial.begin(115200);
+    Serial.println();
+    Serial.print("Connecting to ");
+    Serial.println(ssid);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED)
+     {
+      delay(500);
+      Serial.print(".");
+     }
+    ip = WiFi.localIP();
+    Serial.println("");
+    Serial.println("WiFi connected");  
+    Serial.println("IP address: ");
+    Serial.println(ip);
+    finger.begin(57600);
+    tft.initR(INITR_BLACKTAB); 
+    tft.fillScreen(ST7735_BLACK);
+    pinMode(D5,INPUT_PULLUP);
+    tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
+    tft.setCursor(0, 80);
+    tft.print("   Press the Button ");
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-if(digitalRead(D5)==LOW)
-{
-  tft.fillScreen(ST7735_BLACK);
-  tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-  tft.setCursor(0, 80);
-  tft.print("  Waiting For Server!");
-  while( !ServerConnect());
-   tft.fillScreen(ST7735_BLACK);
-  tft.drawRect(0,0 ,128,32, ST7735_GREEN);
-    tft.setCursor(25, 15);
-  tft.print(event1);
-  tft.fillCircle(10,15,5,ST7735_GREEN);
-    tft.drawRect(0,32 ,128,64, ST7735_GREEN);
-   tft.setCursor(25, 45);
-  tft.print(event2);
-     tft.drawRect(0,64 ,128,96, ST7735_GREEN);
-   tft.setCursor(25, 75);
-  tft.print(event3);
-     tft.drawRect(0,96 ,128, 128, ST7735_GREEN);
-   tft.setCursor(25, 105);
-  tft.print(event4);
-     tft.drawRect(0,128 ,128,160, ST7735_GREEN);
-   tft.setCursor(25, 135);
-  tft.print(event5);
-  int a=0,i=0;
-  while(digitalRead(D5)==HIGH){yield();}
- while(a!=1){
-  if(a==2)
+  if(digitalRead(D5)==LOW)
   {
-   tft.fillCircle(10,15+30*i,5,ST7735_BLACK);
-   i++;
-   if(i>4)i=0;
-   tft.fillCircle(10,15+30*i,5,ST7735_GREEN); 
-   Serial.println("Yo");
+    tft.fillScreen(ST7735_BLACK);
+    tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
+    tft.setCursor(0, 80);
+    tft.print("  Waiting For Server!");
+    while( !ServerConnect());
+    tft.fillScreen(ST7735_BLACK);
+    tft.drawRect(0,0 ,128,32, ST7735_GREEN);
+    tft.setCursor(25, 15);
+    tft.print(event1);
+    tft.fillCircle(10,15,5,ST7735_GREEN);
+    tft.drawRect(0,32 ,128,64, ST7735_GREEN);
+    tft.setCursor(25, 45);
+    tft.print(event2);
+    tft.drawRect(0,64 ,128,96, ST7735_GREEN);
+    tft.setCursor(25, 75);
+    tft.print(event3);
+    tft.drawRect(0,96 ,128, 128, ST7735_GREEN);
+    tft.setCursor(25, 105);
+    tft.print(event4);
+    tft.drawRect(0,128 ,128,160, ST7735_GREEN);
+    tft.setCursor(25, 135);
+    tft.print(event5);
+    int a=0,i=0;
+    while(digitalRead(D5)==HIGH){yield();}
+   while(a!=1){
+    if(a==2)
+    {
+     tft.fillCircle(10,15+30*i,5,ST7735_BLACK);
+     i++;
+     if(i>4)i=0;
+     tft.fillCircle(10,15+30*i,5,ST7735_GREEN); 
+     Serial.println("Yo");
+    }
+    a=Select();
+    yield();
+    }
+    tft.fillScreen(ST7735_BLACK);
+    tft.setCursor(55, 75);
+    tft.print(i);
+  /*  client.print(i);
+    client.print(String("POST ") + url + " HTTP/1.1\r\n" +
+             "Host: " + host + "\r\n" +
+             "Connection: close\r\n\r\n");
+    client.print("Content-Type: application/json\r\n");
+   */
+   delay(2000);
+   tft.fillScreen(ST7735_BLACK);
+   tft.setCursor(1, 75);
+   tft.print("Press Button to Start");
+   i=0;
+   while(i< 121){
+   while(digitalRead(D5)==HIGH){yield();
   }
-  a=Select();
-  yield();
- }
-  tft.fillScreen(ST7735_BLACK);
- tft.setCursor(55, 75);
-  tft.print(i);
-/*  client.print(i);
-  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-           "Host: " + host + "\r\n" +
-           "Connection: close\r\n\r\n");
-  client.print("Content-Type: application/json\r\n");
- */
- delay(2000);
- tft.fillScreen(ST7735_BLACK);
- tft.setCursor(1, 75);
- tft.print("Press Button to Start");
- i=0;
- while(i< 121){
- while(digitalRead(D5)==HIGH){yield();}
   checkID(attendance);}
-  
-
-}
+ }
 }
 
 int Select(void)
@@ -211,7 +209,6 @@ String str = "{ 'id' : '1614'}";
     Serial.println(line);
     //Serial.print("Data Sent!");
     //
-    
     //parse the char array here
   
   return 1;

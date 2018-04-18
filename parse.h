@@ -33,7 +33,7 @@ status parseString(char* Input, Event_TypeDef* events){
 		while(*Input != ';')
 		{
 			events[count].Event[counter++] = *Input++;
-			if(*Input == '\0' || *Input == ';')
+			if(*Input == '\0' || *Input == ';' || *Input == ',')
 			{	
 				events[count].Event[counter++] = '\0';
 				break;
