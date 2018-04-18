@@ -3,7 +3,7 @@
 #include <SPI.h>
 #include <parse.h>
 #include <ESP8266WiFi.h>
-//#include "sha256.h"
+#include <Hash.h>
 #include "ArduinoJson.h"
 #include <Adafruit_Fingerprint.h>
 #include <SoftwareSerial.h>
@@ -16,7 +16,8 @@ SoftwareSerial mySerial(D2,D3);
 
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
-uint8_t *hash;
+Event_TypeDef jsonparse[5];
+String hash;
 
 char event1[20] = "Maths_Test";
 char event2[20] = "Physics_Test";
@@ -24,11 +25,11 @@ char event3[20] = "Chemistry_Test";
 char event4[20] = "Electronics_Test";
 char event5[20] = "Mechanics_Test";
 bool attendance[120]={0};
-Event_TypeDef jsonparse[5];
+
 uint8_t checkID(int *attendance);
-const char* ssid  = "siddhartha.346";//";   //replace with your own SSID
-const char* password = "qwertyuiop1";    //replace with your own
-const char* host = "http://ptsv2.com/t/skjfq-1523827369";  
+const char* ssid  = "NITS";//";   //replace with your own SSID
+const char* password = "abcde";    //replace with your own
+const char* host = "lastiot.000webhostapp.com";  
 uint8_t checkID(bool *attendance);
 uint8_t setID(bool *attendance);
 #define TFT_CS     D7
@@ -44,93 +45,95 @@ bool ServerConnect(void);
   IPAddress ip;
   int i;
   String identify;
-  
 void setup() 
 {
-    Serial.begin(115200);
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED)
-     {
-      delay(500);
-      Serial.print(".");
-     }
-    ip = WiFi.localIP();
-    Serial.println("");
-    Serial.println("WiFi connected");  
-    Serial.println("IP address: ");
-    Serial.println(ip);
-    finger.begin(57600);
-    tft.initR(INITR_BLACKTAB); 
-    tft.fillScreen(ST7735_BLACK);
-    pinMode(D5,INPUT_PULLUP);
-    tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-    tft.setCursor(0, 80);
-    tft.print("   Press the Button ");
+Serial.begin(115200);
+Serial.println();
+Serial.print("Connecting to ");
+Serial.println(ssid);
+WiFi.mode(WIFI_STA);
+WiFi.begin(ssid, password);
+while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  ip = WiFi.localIP();
+Serial.println("");
+Serial.println("WiFi connected");  
+Serial.println("IP address: ");
+Serial.println(ip);
+finger.begin(57600);
+tft.initR(INITR_BLACKTAB); 
+tft.fillScreen(ST7735_BLACK);
+pinMode(D5,INPUT_PULLUP);
+tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
+tft.setCursor(0, 80);
+tft.print("   Press the Button ");
+
+
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  if(digitalRead(D5)==LOW)
-  {
-    tft.fillScreen(ST7735_BLACK);
-    tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
-    tft.setCursor(0, 80);
-    tft.print("  Waiting For Server!");
-    while( !ServerConnect());
-    tft.fillScreen(ST7735_BLACK);
-    tft.drawRect(0,0 ,128,32, ST7735_GREEN);
-    tft.setCursor(25, 15);
-    tft.print(event1);
-    tft.fillCircle(10,15,5,ST7735_GREEN);
-    tft.drawRect(0,32 ,128,64, ST7735_GREEN);
-    tft.setCursor(25, 45);
-    tft.print(event2);
-    tft.drawRect(0,64 ,128,96, ST7735_GREEN);
-    tft.setCursor(25, 75);
-    tft.print(event3);
-    tft.drawRect(0,96 ,128, 128, ST7735_GREEN);
-    tft.setCursor(25, 105);
-    tft.print(event4);
-    tft.drawRect(0,128 ,128,160, ST7735_GREEN);
-    tft.setCursor(25, 135);
-    tft.print(event5);
-    int a=0,i=0;
-    while(digitalRead(D5)==HIGH){yield();}
-   while(a!=1){
-    if(a==2)
-    {
-     tft.fillCircle(10,15+30*i,5,ST7735_BLACK);
-     i++;
-     if(i>4)i=0;
-     tft.fillCircle(10,15+30*i,5,ST7735_GREEN); 
-     Serial.println("Yo");
-    }
-    a=Select();
-    yield();
-    }
-    tft.fillScreen(ST7735_BLACK);
-    tft.setCursor(55, 75);
-    tft.print(i);
-  /*  client.print(i);
-    client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-             "Host: " + host + "\r\n" +
-             "Connection: close\r\n\r\n");
-    client.print("Content-Type: application/json\r\n");
-   */
-   delay(2000);
+if(digitalRead(D5)==LOW)
+{
+  tft.fillScreen(ST7735_BLACK);
+  tft.drawRect(0,64 ,128, 40, ST7735_GREEN);
+  tft.setCursor(0, 80);
+  tft.print("  Waiting For Server!");
+  while( !ServerConnect());
    tft.fillScreen(ST7735_BLACK);
-   tft.setCursor(1, 75);
-   tft.print("Press Button to Start");
-   i=0;
-   while(i< 121){
-   while(digitalRead(D5)==HIGH){yield();
+  tft.drawRect(0,0 ,128,32, ST7735_GREEN);
+    tft.setCursor(25, 15);
+  tft.print(event1);
+  tft.fillCircle(10,15,5,ST7735_GREEN);
+    tft.drawRect(0,32 ,128,64, ST7735_GREEN);
+   tft.setCursor(25, 45);
+  tft.print(event2);
+     tft.drawRect(0,64 ,128,96, ST7735_GREEN);
+   tft.setCursor(25, 75);
+  tft.print(event3);
+     tft.drawRect(0,96 ,128, 128, ST7735_GREEN);
+   tft.setCursor(25, 105);
+  tft.print(event4);
+     tft.drawRect(0,128 ,128,160, ST7735_GREEN);
+   tft.setCursor(25, 135);
+  tft.print(event5);
+  int a=0,i=0;
+  while(digitalRead(D5)==HIGH){yield();}
+ while(a!=1){
+  if(a==2)
+  {
+   tft.fillCircle(10,15+30*i,5,ST7735_BLACK);
+   i++;
+   if(i>4)i=0;
+   tft.fillCircle(10,15+30*i,5,ST7735_GREEN); 
+   Serial.println("Yo");
   }
-  checkID(attendance);}
+  a=Select();
+  yield();
  }
+  tft.fillScreen(ST7735_BLACK);
+ tft.setCursor(55, 75);
+  tft.print(i);
+/*  client.print(i);
+  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
+           "Host: " + host + "\r\n" +
+           "Connection: close\r\n\r\n");
+  client.print("Content-Type: application/json\r\n");
+ */
+ delay(2000);
+ tft.fillScreen(ST7735_BLACK);
+ tft.setCursor(1, 75);
+ tft.print("Press Button to Start");
+ i=0;
+ while(i< 121){
+ while(digitalRead(D5)==HIGH){yield();}
+  checkID(attendance);}
+  
+
+}
 }
 
 int Select(void)
@@ -160,55 +163,67 @@ return 0;
 bool ServerConnect(void)
 {
 
+   Serial.print("connecting to ");
+  Serial.println(host);
+  
+  // Use WiFiClient class to create TCP connections
   WiFiClient client;
-  const int httpPort = 80;
-  if (!client.connect(host, httpPort)) 
-  {
+  const int httpPort = 8080;
+  if (!client.connect("172.16.30.20", httpPort)) {
     Serial.println("connection failed");
-    return 0;
-  }   
+    return 4;
+  }
 
+identify = "1614";
+hash = sha1(identify+"BioMetriC"); 
 
 JsonObject& root = jsonBuffer.createObject();
-identify = "1614";
+
 root["id"] = identify;
-
-
-//Sha256.init();
-//Sha256.print(identify+"Biometric");
-//hash = Sha256.result(); 
-
-
-char JSONmessageBuffer[42];
+root["hash"] = hash;
+char JSONmessageBuffer[77];
 root.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
 //parseString(JSONmessageBuffer,jsonparse);
 Serial.println(JSONmessageBuffer);
-String str = "{ 'id' : '1614'}"; 
-  String url="http://ptsv2.com/t/skjfq-1523827369";//https://lastiot.000webhostapp.com/api.php
-  //client.print(JSONmessageBuffer);//a
-  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-           "Host: " + host + "\r\n" +
-           "Connection: Close\r\n\r\n");
- 
-  client.print("Accept: application/json\r\n");
-  client.print("Content-Type: application/json\r\n"); 
-   client.print("Content-Length:"+ str.length()); 
-    client.print(str); 
+
+String url="https://lastiot.000webhostapp.com/api.php";//https://lastiot.000webhostapp.com/api.php
+
+client.print("POST " + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" + 
+               "Connection: close\r\n");
+client.print("Content-Type: application/json\r\n");
+client.print("Content-Length: 77");
+client.print("\r\n");
+client.print("x-verify: lol\r\n");
+client.println();
+client.println(JSONmessageBuffer);
+client.print("\n");
+//client.print(str + "\n");
+
+
+/*  client.print("Content-Type: application/json\r\n"); 
+  client.print("Content-Length: 42 \r\n");
+  client.println(); 
+  client.print(JSONmessageBuffer); */
    
   unsigned long timeout = millis();
   while (client.available() == 0) {
-    if (millis() - timeout > 5000) {
+    if (millis() - timeout > 15000) {
         Serial.println(">>> Client Timeout !");
         client.stop();
         return 0;
     }
   }
-
+String line;
     delay(100);
-    String line = client.readStringUntil('\0');
-    Serial.println(line);
+    for(i=0;i<12;i++){
+     line = client.readStringUntil('\n');
+    Serial.println(line);}
     //Serial.print("Data Sent!");
     //
+    line = client.readStringUntil('\n');
+    Serial.println("The json response is");
+    Serial.println(line);
     //parse the char array here
   
   return 1;
