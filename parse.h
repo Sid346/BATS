@@ -5,7 +5,7 @@
 
 typedef struct{
 	char eventId;
-	char Event[20];
+	char Event[100];
 }Event_TypeDef;
 
 typedef enum{
