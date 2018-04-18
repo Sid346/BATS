@@ -23,8 +23,8 @@ status parseString(char* Input, Event_TypeDef* events){
 	int counter;
 	while(*Input != '\0')
 	{	
-		while(*Input != ',')
-			Input++;
+		// while(*Input != ',') // Comment it if the required string in json is before the status element, otherwise it'll skip the string portion.
+		// 	Input++;
 		while(*Input != ':')
 			Input++;
 		Input++;
