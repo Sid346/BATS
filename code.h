@@ -1,8 +1,8 @@
 #ifndef  _CODE_H
 #define  _CODE_H
 typedef unsigned short uint8_t
-uint8_t setID(int *attendance){
-	attendance[finger.fingerID] = 1;
+uint8_t setID(char *attendance){
+	attendance[finger.fingerID] = '1';
 }
 
 uint8_t checkID(int *attendance){
