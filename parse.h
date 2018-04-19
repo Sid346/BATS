@@ -18,14 +18,15 @@ void delay(){
 	while(--counter!=0);
 }
 
-status parseString(const char* Input, Event_TypeDef* events){
+int parseString(const char* Input, Event_TypeDef* events){
 	int count = 0;
 	int counter;
+	while(*Input != ',')
+		Input++;
+	Input++;
 	while(*Input != '\0')
 	{	
 		while(*Input != ',')
-			Input++;
-		while(*Input != ':')
 			Input++;
 		Input++;
 		events[count].eventId = count;
@@ -33,7 +34,7 @@ status parseString(const char* Input, Event_TypeDef* events){
 		while(*Input != ';')
 		{
 			events[count].Event[counter++] = *Input++;
-			if(*Input == '\0' || *Input == ';' || *Input == ',')
+			if(*Input == '\0' || *Input == ';')
 			{	
 				events[count].Event[counter++] = '\0';
 				break;
@@ -43,5 +44,6 @@ status parseString(const char* Input, Event_TypeDef* events){
 
 
 	}
+	return 0;
 }
 #endif

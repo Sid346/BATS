@@ -24,12 +24,11 @@ char event2[20] = "Physics_Test";
 char event3[20] = "Chemistry_Test";
 char event4[20] = "Electronics_Test";
 char event5[20] = "Mechanics_Test";
-bool attendance[120]={0};
-
+char attendance[120]={0};
 uint8_t checkID(int *attendance);
-const char* ssid  = "utkarsh";//";   //replace with your own SSID
-const char* password = "utkarsh123";    //replace with your own
-const char* host = "bats.rf.gd";  
+const char* ssid  = "CPH1701";//";   //replace with your own SSID
+const char* password = "12345678";    //replace with your own
+const char* host = "bats.atwebpages.com";  
 uint8_t checkID(bool *attendance);
 uint8_t setID(bool *attendance);
 #define TFT_CS     D7
@@ -41,6 +40,8 @@ uint8_t setID(bool *attendance);
 #define TFT_MOSI D1   // set these to be whatever pins you like!
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 StaticJsonBuffer<200> jsonBuffer;
+  WiFiClient client;
+  
 bool ServerConnect(void);
   IPAddress ip;
   int i;
@@ -116,21 +117,21 @@ tft.print("BATS");
   tft.setTextSize(1);
    tft.fillScreen(ST7735_BLACK);
   tft.drawRect(0,0 ,159,25, ST7735_GREEN);
-    tft.setCursor(20,0);
+    tft.setCursor(20,13);
   tft.print(jsonparse[0].Event);
   tft.fillCircle(10,10,5,ST7735_GREEN);
  tft.drawRect(0,25 ,159,25, ST7735_GREEN);
    tft.setCursor(20,37);
-  tft.print(event2);
+  tft.print(jsonparse[1].Event);
  tft.drawRect(0,50 ,159,25, ST7735_GREEN);
    tft.setCursor(20,62);
-  tft.print(event3);
+  tft.print(jsonparse[2].Event);
   tft.drawRect(0,75,159,25, ST7735_GREEN);
    tft.setCursor(20,87);
-  tft.print(event4);
+  tft.print(jsonparse[3].Event);
 tft.drawRect(0,100,159,25, ST7735_GREEN);
    tft.setCursor(20,113);
-  tft.print(event5);
+  tft.print(jsonparse[4].Event);
   int a=0,i=0;
   while(digitalRead(D5)==HIGH){yield();}
  while(a!=1){
@@ -145,15 +146,12 @@ tft.drawRect(0,100,159,25, ST7735_GREEN);
   a=Select();
   yield();
  }
-  tft.fillScreen(ST7735_BLACK);
- tft.setCursor(55, 75);
-  tft.print(i);
-/*  client.print(i);
-  client.print(String("POST ") + url + " HTTP/1.1\r\n" +
-           "Host: " + host + "\r\n" +
-           "Connection: close\r\n\r\n");
-  client.print("Content-Type: application/json\r\n");
- */
+tft.fillScreen(ST7735_BLACK);
+tft.setCursor(55, 75);
+tft.print(i);
+JsonObject &eventid= jsonBuffer.createObject();
+eventid["event_id"] = i;
+//senddata(eventid,url);
  delay(2000);
  tft.fillScreen(ST7735_BLACK);
   tft.setTextSize(2);
@@ -215,6 +213,23 @@ int Select(void)
 }
 return 0;
 }
+void senddata(JsonObject& root,String url)
+{ 
+char JSONmessageBuffer[22];
+root.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
+//parseString(JSONmessageBuffer,jsonparse);
+Serial.println(JSONmessageBuffer);//https://lastiot.000webhostapp.com/api.php
+client.print("POST " + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" + 
+               "Connection: close\r\n");
+client.print("Content-Type: application/json\r\n");
+client.print("Content-Length: 22");
+client.print("\r\n");
+client.print("x-verify: lol\r\n");
+client.println();
+client.println(JSONmessageBuffer);
+client.print("\n");
+}
 bool ServerConnect(void)
 {
 
@@ -222,7 +237,7 @@ bool ServerConnect(void)
   Serial.println(host);
   
   // Use WiFiClient class to create TCP connections
-  WiFiClient client;
+
   const int httpPort = 80;
   if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
@@ -230,29 +245,13 @@ bool ServerConnect(void)
   }
 
 identify = "1615";
-hash = sha1(identify+"BioMetriC"); 
+//hash = sha1(identify+"BioMetriC"); 
 
 JsonObject& root = jsonBuffer.createObject();
 
 root["id"] = identify;
-root["hash"] = hash;
-char JSONmessageBuffer[77];
-root.prettyPrintTo(JSONmessageBuffer, sizeof(JSONmessageBuffer));
-//parseString(JSONmessageBuffer,jsonparse);
-Serial.println(JSONmessageBuffer);
-
-String url="/Bhatt/service1.php";//https://lastiot.000webhostapp.com/api.php
-
-client.print("POST " + url + " HTTP/1.1\r\n" +
-               "Host: " + host + "\r\n" + 
-               "Connection: close\r\n");
-client.print("Content-Type: application/json\r\n");
-client.print("Content-Length: 77");
-client.print("\r\n");
-client.print("x-verify: lol\r\n");
-client.println();
-client.println(JSONmessageBuffer);
-client.print("\n");
+//root["hash"] = hash;
+senddata(root,"/service1.php");
 //client.print(str + "\n");
 
 
@@ -271,28 +270,33 @@ client.print("\n");
   }
 String line;
     delay(100);
-    for(i=0;i<12;i++){
-     line = client.readStringUntil('\0');
-    Serial.println(line);}
+    for(i=0;i<8;i++){
+     line = client.readStringUntil('\n');
+    Serial.println(line);
+    }
     //Serial.print("Data Sent!");
     //
     line = client.readStringUntil('\n');
+    Serial.println(line);
     char *line2 = (char*)line.c_str();
     Serial.println("The json response is");
     parseString(line2,jsonparse);
     Serial.println(jsonparse[0].Event);
-    Serial.println(jsonparse[0].eventId);
+    Serial.println(jsonparse[1].Event);
+    Serial.println(jsonparse[2].Event);
+    Serial.println(jsonparse[3].Event);
+    Serial.println(jsonparse[4].Event);
     //parse the char array here
   
   return 1;
   }
 
 //typedef unsigned short uint8_t;
-uint8_t setID(bool *attendance){
+uint8_t setID(char *attendance){
   attendance[finger.fingerID] = 1;
 }
 
-uint8_t checkID(bool *attendance){
+uint8_t checkID(char *attendance){
   uint8_t val = finger.getImage();
    unsigned long timeout = millis();
   tft.fillScreen(ST7735_BLACK);
@@ -337,11 +341,12 @@ tft.print("Presented!");
     tft.fillScreen(ST7735_BLACK);
     tft.setCursor(30,50);
     tft.print("Attendance Stored");
-    tft.setCursor(10, 100);
+    tft.setCursor(0, 100);
     tft.print("Scan Admin's Finger to STOP!");
     delay(1500);
     setID(attendance);
     i++;
+    Serial.println(attendance);
     return 1;
   }else {
     tft.fillScreen(ST7735_BLACK);
