@@ -8,10 +8,6 @@
 #include <Adafruit_Fingerprint.h>
 #include <SoftwareSerial.h>
 
-int getFingerprintIDez();
-
-// pin #2 is IN from sensor (GREEN wire)
-// pin #3 is OUT from arduino  (WHITE wire)
 SoftwareSerial mySerial(D2,D3);
 
 
@@ -19,12 +15,7 @@ Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 Event_TypeDef jsonparse[5];
 String hash;
 
-char event1[20] = "Maths_Test";
-char event2[20] = "Physics_Test";
-char event3[20] = "Chemistry_Test";
-char event4[20] = "Electronics_Test";
-char event5[20] = "Mechanics_Test";
-bool attendance[120]={0};
+char attendance[120]={'0'};
 
 uint8_t checkID(int *attendance);
 const char* ssid  = "NITS";//";   //replace with your own SSID
