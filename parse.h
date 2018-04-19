@@ -5,7 +5,7 @@
 
 typedef struct{
 	char eventId;
-	char Event[25];
+	char Event[25c];
 }Event_TypeDef;
 
 typedef enum{
@@ -23,8 +23,8 @@ status parseString(char* Input, Event_TypeDef* events){
 	int counter;
 	while(*Input != '\0')
 	{	
-		// while(*Input != ',') // Comment it if the required string in json is before the status element, otherwise it'll skip the string portion.
-		// 	Input++;
+		while(*Input != ',') // Comment it if the required string in json is before the status element, otherwise it'll skip the string portion.
+			Input++;
 		// while(*Input != ':')
 		// 	Input++;
 		// Input++;
